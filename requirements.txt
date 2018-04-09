@@ -1,0 +1,4 @@
+pyobjc-core
+pyobjc
+pyautogui
+selenium
