@@ -2,3 +2,7 @@ pyobjc-core
 pyobjc
 pyautogui
 selenium
+keras-rl
+gym
+tensorflow
+opencv-python==3.3.0.10

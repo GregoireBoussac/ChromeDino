@@ -1,5 +1,8 @@
+import numpy as np
+
 import mss
 import mss.tools
+
 
 def screen_capture(top, left, width, height):
     with mss.mss() as sct:
