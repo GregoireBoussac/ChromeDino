@@ -16,42 +16,49 @@ import tools
 
 class Game():
     
-    def __init__(self):
-        # Launch Selenium browser
+    def __init__(self, selenium=True):
+        self.selenium = selenium
         driver_path = '/Users/gregoire/Documents/git/ChromeDino/chromedriver'
-        chrome_options = Options()
-        chrome_options.add_argument('--start-fullscreen')
-        self.driver = webdriver.Chrome(driver_path, options=chrome_options)
-        self.driver.get('https://chromedino.com/')
-        self.body = self.driver.find_element_by_css_selector('body')
+        if self.selenium:
+            chrome_options = Options()
+            #chrome_options.add_argument('--start-fullscreen')
+            self.driver = webdriver.Chrome(driver_path, options=chrome_options)
+            self.driver.get('https://chromedino.com/')
+            self.body = self.driver.find_element_by_css_selector('body')
         
-        ####
-        # BELOW: Starts as soon as the page is fully loaded
-        ####
+        # Starts as soon as the page is fully loaded
         
-        # Defines the size of the mask
+        # Define the size of the mask
         self.h_mask = 130
         self.w_mask = 600
-                        
+        
         self.vision = Vision(self.h_mask, self.w_mask)
+        
+        self.game_over=False
+        
+        t = time.time()
         self.vision.get_position_roi()
         print('Get position ROI: ', time.time()-t)
         self.roi = self.vision.grab_roi() # Get screenshot of initial state
-
-        # Launch game
-        self.game_over=False
+        
+        cv2.imshow('Game', self.roi)
+        
         self.start_game()
         self.play()
     
     def jump(self, action='up'):
         if action is not None:
-            if action == 'up':
-                self.body.send_keys(Keys.ARROW_UP)
-                print('up')
+            if self.selenium:
+                if action == 'up':
+                    self.body.send_keys(Keys.ARROW_UP)
+                    print('up')
+                else:
+                    self.body.send_keys(Keys.ARROW_DOWN)
+                    print('down')
             else:
-                self.body.send_keys(Keys.ARROW_DOWN)
-                print('down')
-
+                pyautogui.press(action)
+                print('Not selenium', action)
+                
     def start_game(self):
         print('>> Start')
         self.jump()
@@ -67,8 +74,13 @@ class Game():
                 
         print(">> Game Over!")
         self.driver.quit()
+        cv2.destroyAllWindows()
+
+
     
     def get_action(self):
+        self.roi = self.vision.grab_roi()
+        
         p = random()
         print('Proba: ', p)
         if p>0.5:
@@ -88,6 +100,10 @@ class Vision():
     def __init__(self, h_mask, w_mask):
         self.h_mask = h_mask
         self.w_mask = w_mask
+        self.window_name = 'Game'
+        
+        cv2.namedWindow(self.window_name,cv2.WINDOW_AUTOSIZE)
+        cv2.moveWindow(self.window_name, 0, 0)
         
     def get_position_roi(self):
         dino = np.asarray(Image.open(r"images/dino.png"))
@@ -98,8 +114,7 @@ class Vision():
         method = cv2.TM_CCORR
 
         w, h, _ = template.shape[::-1]
-
-        method = cv2.TM_CCOEFF
+        
         # Apply template Matching
         res = cv2.matchTemplate(img, template, method)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
@@ -109,9 +124,15 @@ class Vision():
     
     def grab_roi(self):
         bottom_left_roi_x, bottom_left_roi_y = self.bottom_left_roi
-        return tools.screen_capture(bottom_left_roi_y - self.h_mask, bottom_left_roi_x, self.w_mask, self.h_mask)
-
-            
+        
+        roi = tools.screen_capture(bottom_left_roi_y - self.h_mask, bottom_left_roi_x, self.w_mask, self.h_mask)
+        
+        # Displays what the algorithm sees
+        cv2.imshow(self.window_name, roi)
+        cv2.waitKey(1)
+        
+        return roi
+    
         
 if __name__ == '__main__':
     game = Game()
