@@ -12,3 +12,13 @@ chromedriver
 dqn_atari.py
 
 install_help.txt
+
+.ipynb_checkpoints/training-checkpoint.py
+
+.ipynb_checkpoints/untitled-checkpoint.txt
+
+images/.ipynb_checkpoints/dino_cropped-checkpoint.png
+
+images/.ipynb_checkpoints/dino-checkpoint.png
+
+images/.ipynb_checkpoints/dino_full-checkpoint.png
