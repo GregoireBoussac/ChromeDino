@@ -14,3 +14,11 @@ In this repository, Selenium requires a Chrome Driver.
 3. Download the driver corresponding to your OS
 4. Unzip the archive
 5. Move the driver in the folder of the repository. Otherwise, you can update the driver's path in `dino.py`
+
+## OpenCV
+
+You might encounter issues with OpenCV, like I did on Mac OS El Capitan.
+OpenCV 2.4.0.11 and 3.4.0.12 dit not work (well). Thus I chose to install the version 3.3.0.10
+Thus, you might have to choose a custom version, depending on your OS.
+
+To do so, you can run `pip install opencv-python==x.x.x.xx`, replacing "x.x.x.xx" by the name of the desired version.
